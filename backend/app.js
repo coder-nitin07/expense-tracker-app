@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('./config/db');
 const { authRouter } = require('./routes/authRoutes');
 const { expenseRouter } = require('./routes/expenseRouter');
+const { analyticsRouter } = require('./routes/analyticsRouter');
 const app = express();
 require('dotenv').config();
 
@@ -14,6 +15,7 @@ db();
 // routes
 app.use('/auth', authRouter);
 app.use('/expense', expenseRouter);
+app.use('/analytics', analyticsRouter);
 
 app.get('/', (req, res)=>{
     res.send('Expense Tracker App Project');
