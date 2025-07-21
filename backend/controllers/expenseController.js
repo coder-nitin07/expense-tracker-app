@@ -112,4 +112,28 @@ const deleteExpense = async (req, res)=>{
     }
 };
 
-module.exports = { createExpense, getAllExpenseOfEmployee, getExpenseById, updateExpenseStatus, deleteExpense };
+// Get Response
+const getResponseByFilter = async (req, res)=>{
+    try {
+        const { status } = req.query;
+
+        const validStatus = ['Pending', 'Approved', 'Rejected'];
+        let filter = {};
+
+        if(status){
+            if(!validStatus.includes(status)){
+                return res.status(400).json({ message: `Invalid status. Must be one of: ${validStatus.join(', ')}` });
+            }
+
+            filter.status = status;
+        }
+
+        const expenses = await Expense.find(filter).populate('createdBy', 'name email');
+        res.status(200).json({ message: 'Expenses fetched successfully', expenses })
+    } catch (err) {
+         console.log(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { createExpense, getAllExpenseOfEmployee, getExpenseById, updateExpenseStatus, deleteExpense, getResponseByFilter };

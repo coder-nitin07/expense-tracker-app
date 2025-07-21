@@ -1,5 +1,5 @@
 const express = require('express');
-const { createExpense, getAllExpenseOfEmployee, getExpenseById, updateExpenseStatus, deleteExpense } = require('../controllers/expenseController');
+const { createExpense, getAllExpenseOfEmployee, getExpenseById, updateExpenseStatus, deleteExpense, getResponseByFilter } = require('../controllers/expenseController');
 const { validateExpense } = require('../middleware/validateExpense');
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
@@ -10,5 +10,6 @@ expenseRouter.get('/getExpenseOfEmployee', authMiddleware, getAllExpenseOfEmploy
 expenseRouter.get('/getExpenseById/:id', authMiddleware, getExpenseById);
 expenseRouter.put('/updateExpense/:id/status', authMiddleware, roleMiddleware, updateExpenseStatus);
 expenseRouter.delete('/deleteExpense/:id', authMiddleware, roleMiddleware, deleteExpense);
+expenseRouter.get('/getExpensesByStatus', authMiddleware, roleMiddleware, getResponseByFilter);
 
 module.exports = { expenseRouter };
