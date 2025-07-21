@@ -1,3 +1,4 @@
+const AuditLog = require("../models/auditLogSchema");
 const User = require("../models/authSchema");
 const Expense = require("../models/expenseSchema");
 
@@ -10,12 +11,26 @@ const createExpense = async (req, res)=>{
             return res.status(404).json({ message: 'Please filled all the fields' });
         }
 
+        if (req.user.role !== 'Employee') {
+            return res.status(403).json({ message: 'Only employees can create expenses' });
+        }
+
         const newExpense = await Expense.create({
             createdBy: req.user.id,
             title,
             amount,
             category,
             description
+        });
+
+        await AuditLog.create({
+            action: 'CREATE_EXPENSE',
+            expenseId: newExpense._id,
+            performedBy: req.user.id,
+            details: {
+                amount: newExpense.amount,
+                category: newExpense.category
+            }
         });
 
         res.status(201).json({ message: 'Expense Created Successfully', newExpense });
@@ -85,6 +100,15 @@ const updateExpenseStatus = async (req, res)=>{
 
 
         getExpense.status = status;
+
+        await AuditLog.create({
+            action: 'UPDATE_STATUS',
+            expenseId: getExpense._id,
+            performedBy: req.user.id,
+            details: {
+                newStatus: status
+            }
+        });
 
         const updatedExpense = await getExpense.save();
         res.status(200).json({ message: 'Expense Updated Successfully', updatedExpense });
