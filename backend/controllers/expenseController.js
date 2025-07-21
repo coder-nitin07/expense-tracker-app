@@ -68,21 +68,23 @@ const getExpenseById = async (req, res)=>{
 };
 
 // Update Expense
-const updateExpense = async (req, res)=>{
+const updateExpenseStatus = async (req, res)=>{
     try {
         const { id } = req.params;
+        const { status } = req.body;
+
+        const validStatuses = ['Pending', 'Approved', 'Rejected'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ message: `Invalid status. Status must be one of: ${validStatuses.join(', ')}` });
+        }
 
         const getExpense = await Expense.findById(id);
         if(!getExpense){
             return res.status(404).json({ message: 'Expense Data not found' });
         }
 
-        const { title, amount, category, description } = req.body;
 
-        if(title !== undefined) getExpense.title = title;
-        if(amount !== undefined) getExpense.amount = amount;
-        if(category !== undefined) getExpense.category = category;
-        if(description !== undefined) getExpense.description = description;
+        getExpense.status = status;
 
         const updatedExpense = await getExpense.save();
         res.status(200).json({ message: 'Expense Updated Successfully', updatedExpense });
@@ -110,4 +112,4 @@ const deleteExpense = async (req, res)=>{
     }
 };
 
-module.exports = { createExpense, getAllExpenseOfEmployee, getExpenseById, updateExpense, deleteExpense };
+module.exports = { createExpense, getAllExpenseOfEmployee, getExpenseById, updateExpenseStatus, deleteExpense };
