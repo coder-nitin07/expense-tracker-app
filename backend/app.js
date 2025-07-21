@@ -1,0 +1,23 @@
+const express = require('express');
+const db = require('./config/db');
+const { authRouter } = require('./routes/authRoutes');
+const app = express();
+require('dotenv').config();
+
+// parse middleware
+app.use(express.json());
+
+// DB Connection
+db();
+
+// routes
+app.use('/auth', authRouter);
+
+app.get('/', (req, res)=>{
+    res.send('Expense Tracker App Project');
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, ()=>{
+    console.log(`Server is running on PORT ${PORT}`);
+});
