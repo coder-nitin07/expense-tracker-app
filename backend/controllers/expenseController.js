@@ -28,14 +28,17 @@ const createExpense = async (req, res)=>{
 // Get Expenses API
 const getAllExpenseOfEmployee = async (req, res)=>{
     try {
-        const { id } = req.user;
+        const { id, role } = req.user;
         
         const getUser = await User.findById(id);
         if(!getUser){
             return res.status(404).json({ message: 'Employee not found.' });
         }
 
-        const getExpenses = await Expense.find({ createdBy: getUser });
+        const getExpenses = role === 'Admin'
+            ? await Expense.find().populate('createdBy', 'name email')
+            : await Expense.find({ createdBy: id })
+
         res.status(200).json({ message: 'Get All Expenses of a Employee', getExpenses });
     } catch (err) {
         console.log(err);
@@ -46,12 +49,16 @@ const getAllExpenseOfEmployee = async (req, res)=>{
 // Get Expense By Id API
 const getExpenseById = async (req, res)=>{
     try {
-        const { id } = req.params;
+        const { id, role } = req.params;
 
         const getExpense = await Expense.findById(id);
         if(!getExpense){
             return res.status(404).json({ message: 'Expense Data not found' });
         }
+
+        const getExpenses = role === 'Admin'
+            ? await Expense.find().populate('createdBy', 'name email')
+            : await Expense.find({ createdBy: id })
 
         res.status(200).json({ message: 'Get Expense Successfully', getExpense });
     } catch (err) {

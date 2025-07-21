@@ -1,31 +1,20 @@
-const Expense = require("../models/expenseSchema");
 
-// Check Admin or Owner of Expense
-const checkAdminOrOwnerOfExpense = async (req, res, next)=>{
+// Admin only 
+const roleMiddleware = async (req, res, next)=>{
     try {
-        const expenseId = req.params.id;
-        const userId = req.user.id;
+        const userRole = req.user.role;
 
         // Admin verification
-        if(req.user.role === 'Admin'){
+        if(userRole === 'Admin'){
             return next();
         };
 
-        const expense = await Expense.findById(expenseId);
-
-        if(!expense){
-            return res.status(404).json({ message: 'Expense not found' });
-        }
-
-        if(expense.createdBy.toString() !== userId){
-            return res.status(403).json({ message: 'Access denied: not your expense' });
-        }
-
-        next();
+        
+        return res.status(403).json({ message: 'Access denied: You are not authorized to modify this expense' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
 
-module.exports = checkAdminOrOwnerOfExpense;
+module.exports = roleMiddleware;
