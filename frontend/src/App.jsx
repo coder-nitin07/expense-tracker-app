@@ -6,6 +6,7 @@ import Signup from "./pages/Auth/Signup";
 // App.css
 import './App.css'
 import Dashboard from "./pages/Dashboard";
+import AddExpense from "./pages/AddExpense";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
 
 
             <Route path="/dashboard" element={<Dashboard /> } />
+            <Route path="/add-expense" element={<AddExpense />} />
         </Routes>
       </div>
     </Router>
