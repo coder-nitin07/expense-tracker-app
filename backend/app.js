@@ -14,6 +14,7 @@ app.use(express.json());
 // DB Connection
 db();
 
+// cors
 app.use(cors());
 
 // routes
