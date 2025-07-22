@@ -65,12 +65,16 @@ const loginUser = async (req, res)=>{
         const payload = { id: user._id, username: user.name, role: user.role };
 
         const jwtToken = jwt.sign(payload, secretKey, { expiresIn: '1h' });
-        res.status(200).json({ message: 'User login successfully',  token: jwtToken,  user: {
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            } });
+        res.status(200).json({ 
+                message: 'User login successfully',  
+                token: jwtToken,  
+                user: {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role
+                } 
+        });
     } catch (err) {
         res.status(500).json({ message: 'Something went wrong' });
     }
