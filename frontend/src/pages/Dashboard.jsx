@@ -1,4 +1,5 @@
 import { useAuth } from '../context/AuthContext';
+import AdminDashboard from './dashboard/AdminDashboard';
 import EmployeeDashboard from './dashboard/EmployeeDashboard';
 
 const Dashboard = () => {
@@ -7,8 +8,8 @@ const Dashboard = () => {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4">Welcome, { user?.name }</h1>
-
-      { user?.role === 'admin' ? (
+      { console.log("first", user.role) }
+      { user?.role === 'Admin' ? (
         <AdminDashboard />
       ) : (
         <EmployeeDashboard />
