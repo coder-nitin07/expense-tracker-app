@@ -7,6 +7,7 @@ import Signup from "./pages/Auth/Signup";
 import './App.css'
 import Dashboard from "./pages/Dashboard";
 import AddExpense from "./pages/AddExpense";
+import MyExpenses from "./pages/MyExpenses";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
 
             <Route path="/dashboard" element={<Dashboard /> } />
             <Route path="/add-expense" element={<AddExpense />} />
+            <Route path="/my-expenses" element={<MyExpenses />} />
         </Routes>
       </div>
     </Router>

@@ -85,6 +85,16 @@ const EmployeeDashboard = () => {
             </ul>
             
         </div>
+
+        <div className="text-right mt-4">
+  <Link
+    to="/my-expenses"
+    className="text-[#4FC3F7] hover:underline text-sm font-medium"
+  >
+    View All Expenses →
+  </Link>
+</div>
+
         </div>
     );
 };
