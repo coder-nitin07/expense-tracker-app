@@ -24,9 +24,11 @@ const Login = () => {
                 password
             });
 
-            loginUser(data);
+             console.log('Data from backend:', data);
+            loginUser({ token: data.token, user: data.user });
 
             toast.success('Login successfully');
+             console.log('Navigating to dashboard...');
             navigate('/dashboard');
         } catch (err) {
             toast.error(err.message);
