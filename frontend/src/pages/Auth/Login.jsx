@@ -1,11 +1,14 @@
-import { motion, useScroll } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
+  const { login: loginUser } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e)=>{
@@ -16,22 +19,14 @@ const Login = () => {
         }
 
         try {
-            const res = await fetch('http://localhost:3000/auth/loginUser', {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ email, password })
+            const { data } = await axios.post('http://localhost:3000/auth/loginUser', {
+                email,
+                password
             });
 
-            const data = await res.json();
-
-            if(!res.ok){
-                throw new Error(data.message || "Login failed");
-            }
+            loginUser(data);
 
             toast.success('Login successfully');
-            localStorage.setItem('token', data.token);
             navigate('/dashboard');
         } catch (err) {
             toast.error(err.message);
