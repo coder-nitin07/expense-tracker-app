@@ -1,21 +1,30 @@
 import React, { useEffect, useState } from "react";
 import API from "../../utils/axios";
 import { useAuth } from "../../context/AuthContext";
+import AnalyticsCharts from "../../components/AnalyticsCharts";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
   const [expenses, setExpenses] = useState([]);
+  const [selectedExpense, setSelectedExpense] = useState(null);
   const [filters, setFilters] = useState({
     status: "",
     category: "",
     fromDate: "",
     toDate: "",
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  
+  
+  
+
 
   useEffect(() => {
     const fetchAllExpenses = async () => {
       try {
-        const res = await API.get("/expense/getExpenseOfEmployee");
+        const res = await API.get("http://localhost:3000/expense/getExpenseOfEmployee");
         setExpenses(res.data.getExpenses || []);
       } catch (err) {
         console.error("Error fetching expenses:", err);
@@ -27,7 +36,7 @@ const AdminDashboard = () => {
 
   const handleStatusChange = async (expenseId, newStatus) => {
     try {
-      await API.put(`/expense/updateExpense/${expenseId}/status`, {
+      await API.put(`http://localhost:3000/expense/updateExpense/${expenseId}/status`, {
         status: newStatus,
       });
       setExpenses((prev) =>
@@ -70,6 +79,12 @@ const AdminDashboard = () => {
     );
   });
 
+  const totalPages = Math.ceil(filteredExpenses.length / itemsPerPage);
+
+  const paginatedExpenses = filteredExpenses.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
   return (
     <div className="space-y-8">
       {/* Summary Cards */}
@@ -97,9 +112,7 @@ const AdminDashboard = () => {
         <select
           className="p-2 rounded"
           value={filters.status}
-          onChange={(e) =>
-            setFilters({ ...filters, status: e.target.value })
-          }
+          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
         >
           <option value="">All Status</option>
           <option value="Pending">Pending</option>
@@ -110,9 +123,7 @@ const AdminDashboard = () => {
         <select
           className="p-2 rounded"
           value={filters.category}
-          onChange={(e) =>
-            setFilters({ ...filters, category: e.target.value })
-          }
+          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
         >
           <option value="">All Categories</option>
           {[...new Set(expenses.map((e) => e.category))].map((cat) => (
@@ -126,19 +137,17 @@ const AdminDashboard = () => {
           type="date"
           className="p-2 rounded"
           value={filters.fromDate}
-          onChange={(e) =>
-            setFilters({ ...filters, fromDate: e.target.value })
-          }
+          onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
         />
         <input
           type="date"
           className="p-2 rounded"
           value={filters.toDate}
-          onChange={(e) =>
-            setFilters({ ...filters, toDate: e.target.value })
-          }
+          onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
         />
       </div>
+
+      <AnalyticsCharts />
 
       {/* Table */}
       <div>
@@ -155,58 +164,111 @@ const AdminDashboard = () => {
                 <th className="text-left px-4 py-2">Action</th>
               </tr>
             </thead>
-            <tbody>
-              {filteredExpenses.map((exp) => (
-                <tr key={exp._id} className="border-t border-[#333]">
-                  <td className="px-4 py-2">{exp.title}</td>
-                  <td className="px-4 py-2">₹{exp.amount}</td>
-                  <td className="px-4 py-2">{exp.category}</td>
-                  <td className="px-4 py-2">
-                    {exp.status === "Pending" ? (
-                      <>
-                        <button
-                          onClick={() =>
-                            handleStatusChange(exp._id, "Approved")
-                          }
-                          className="bg-green-600 text-white px-3 py-1 rounded mr-2"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleStatusChange(exp._id, "Rejected")
-                          }
-                          className="bg-red-600 text-white px-3 py-1 rounded"
-                        >
-                          Reject
-                        </button>
-                      </>
-                    ) : (
-                      exp.status
-                    )}
-                  </td>
-                  <td className="px-4 py-2">{exp.createdBy?.name}</td>
-                  <td className="px-4 py-2">
-                    <button
-                      onClick={() => handleDelete(exp._id)}
-                      className="bg-red-700 text-white px-3 py-1 rounded hover:bg-red-800"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {filteredExpenses.length === 0 && (
-                <tr>
-                  <td colSpan="6" className="text-center py-4 text-gray-400">
-                    No expenses match the selected filters.
-                  </td>
-                </tr>
-              )}
-            </tbody>
+           <tbody>
+  {paginatedExpenses.map((exp) => (
+    <tr key={exp._id} className="border-t border-[#333]">
+      <td className="px-4 py-2">{exp.title}</td>
+      <td className="px-4 py-2">₹{exp.amount}</td>
+      <td className="px-4 py-2">{exp.category}</td>
+      <td className="px-4 py-2">
+        {exp.status === "Pending" ? (
+          <>
+            <button
+              onClick={() => handleStatusChange(exp._id, "Approved")}
+              className="bg-green-600 text-white px-3 py-1 rounded mr-2"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => handleStatusChange(exp._id, "Rejected")}
+              className="bg-red-600 text-white px-3 py-1 rounded"
+            >
+              Reject
+            </button>
+          </>
+        ) : (
+          exp.status
+        )}
+      </td>
+      <td className="px-4 py-2">{exp.createdBy?.name}</td>
+      <td className="px-4 py-2">
+        <button
+          onClick={() => handleDelete(exp._id)}
+          className="bg-red-700 text-white px-3 py-1 rounded hover:bg-red-800"
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  ))}
+  {paginatedExpenses.length === 0 && (
+    <tr>
+      <td colSpan="6" className="text-center py-4 text-gray-400">
+        No expenses match the selected filters.
+      </td>
+    </tr>
+  )}
+</tbody>
+
           </table>
+
+
+          <div className="flex justify-center mt-6 gap-2 text-white">
+  <button
+    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+    disabled={currentPage === 1}
+    className="px-3 py-1 bg-gray-700 rounded disabled:opacity-50"
+  >
+    Prev
+  </button>
+
+  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+    <button
+      key={page}
+      onClick={() => setCurrentPage(page)}
+      className={`px-3 py-1 rounded ${
+        page === currentPage ? "bg-blue-600" : "bg-gray-700"
+      }`}
+    >
+      {page}
+    </button>
+  ))}
+
+  <button
+    onClick={() =>
+      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+    }
+    disabled={currentPage === totalPages}
+    className="px-3 py-1 bg-gray-700 rounded disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
+
         </div>
       </div>
+
+      {/* View Modal */}
+      {selectedExpense && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+          <div className="bg-white text-black rounded-xl p-6 max-w-md w-full relative shadow-lg">
+            <button
+              onClick={() => setSelectedExpense(null)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-black text-xl"
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-semibold mb-4">Expense Details</h2>
+            <p><strong>Title:</strong> {selectedExpense.title}</p>
+            <p><strong>Amount:</strong> ₹{selectedExpense.amount}</p>
+            <p><strong>Category:</strong> {selectedExpense.category}</p>
+            <p><strong>Status:</strong> {selectedExpense.status}</p>
+            <p><strong>Description:</strong> {selectedExpense.description || 'N/A'}</p>
+            <p><strong>Created By:</strong> {selectedExpense.createdBy?.name}</p>
+            <p><strong>Date:</strong> {new Date(selectedExpense.createdAt).toLocaleDateString()}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
