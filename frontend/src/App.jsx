@@ -10,6 +10,7 @@ import AddExpense from "./pages/AddExpense";
 import MyExpenses from "./pages/MyExpenses";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AuditLogs from "./pages/AuditLogs";
+import CreateUserPage from "./pages/Auth/CreateUserPage";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/" element={<Navigate to='/login' /> } />
             <Route path="/login" element={<Login /> } />
             <Route path="/signup" element={<Signup /> } />
+            <Route path="/admin/create-user" element={<CreateUserPage />} />
 
              {/* Protected Routes (for both Admin and Employee) */}
             <Route element={<ProtectedRoute allowedRoles={["Admin", "Employee"]} />}>

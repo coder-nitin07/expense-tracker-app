@@ -3,6 +3,7 @@ import API from "../../utils/axios";
 import { useAuth } from "../../context/AuthContext";
 import AnalyticsCharts from "../../components/AnalyticsCharts";
 import Papa from "papaparse";
+import { Link } from 'react-router-dom';
 import { saveAs } from "file-saver";
 
 const AdminDashboard = () => {
@@ -111,7 +112,12 @@ const AdminDashboard = () => {
   saveAs(blob, "expenses.csv");
 };
   return (
+    
     <div className="space-y-8">
+       <Link to="/admin/create-user" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+        + Create User
+      </Link>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
         <div className="bg-[#1E1E1E] p-4 rounded-xl shadow text-white">
