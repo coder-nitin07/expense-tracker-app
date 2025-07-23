@@ -46,6 +46,53 @@ const createUser = async (req, res)=>{
     }
 };
 
+// Create user (Admin-only)
+const createUserByAdmin = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+
+    // Validate input
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Check for valid role
+    if (!['Admin', 'Employee'].includes(role)) {
+      return res.status(400).json({ message: 'Invalid role. Must be Admin or Employee.' });
+    }
+
+    // Check if email is already used
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ message: 'Email already registered' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role,
+    });
+
+    await newUser.save();
+
+    res.status(201).json({
+      message: 'User created successfully by Admin',
+      user: {
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Something went wrong', error: err.message });
+  }
+};
+
 // login the User
 const loginUser = async (req, res)=>{
     try {
@@ -105,4 +152,4 @@ const logoutUser = async (req, res)=>{
     }
 };
 
-module.exports = { createUser, loginUser, logoutUser };
+module.exports = { createUser, createUserByAdmin, loginUser, logoutUser };
