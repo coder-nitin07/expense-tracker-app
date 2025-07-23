@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import API from "../../utils/axios";
 import { useAuth } from "../../context/AuthContext";
 import AnalyticsCharts from "../../components/AnalyticsCharts";
+import Papa from "papaparse";
+import { saveAs } from "file-saver";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -85,6 +87,29 @@ const AdminDashboard = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+
+
+  const handleExportCSV = () => {
+  if (filteredExpenses.length === 0) {
+    alert("No expenses to export.");
+    return;
+  }
+
+  const csvData = filteredExpenses.map((exp) => ({
+    Title: exp.title,
+    Amount: exp.amount,
+    Category: exp.category,
+    Status: exp.status,
+    CreatedBy: exp.createdBy?.name || "N/A",
+    CreatedAt: new Date(exp.createdAt).toLocaleString(),
+    Description: exp.description || "",
+  }));
+
+  const csv = Papa.unparse(csvData);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  saveAs(blob, "expenses.csv");
+};
   return (
     <div className="space-y-8">
       {/* Summary Cards */}
@@ -148,6 +173,14 @@ const AdminDashboard = () => {
       </div>
 
       <AnalyticsCharts />
+
+      <button
+  onClick={handleExportCSV}
+  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+>
+  Export CSV
+</button>
+
 
       {/* Table */}
       <div>
