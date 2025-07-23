@@ -88,3 +88,6 @@ To test the Admin features, use the following credentials in the deployed app:
   "email": "sam@gmail.com",
   "password": "sam@1234"
 }
+
+
+backend deploy  URL - https://expense-tracker-backend-ujyr.onrender.com
