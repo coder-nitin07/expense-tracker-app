@@ -37,7 +37,7 @@ const Signup = () => {
 
     return (
         <motion.div
-            className="min-h-screen flex justify-center items-center bg-[#121212] text-white overflow-hidden"
+            className="min-h-screen flex justify-center items-center bg-[#121212] text-white overflow-hidden  w-[30%]"
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}

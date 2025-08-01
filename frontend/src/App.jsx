@@ -15,7 +15,7 @@ import CreateUserPage from "./pages/Auth/CreateUserPage";
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-[#121212] text-white flex justify-center items-center overflow-hidden">
+      <div className="min-h-screen bg-[#121212] text-white flex justify-center items-center overflow-hidden ">
         <Routes>
             <Route path="/" element={<Navigate to='/login' /> } />
             <Route path="/login" element={<Login /> } />
